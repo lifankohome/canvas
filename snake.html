@@ -24,13 +24,16 @@
 
     var snakeBody = [];
 
+    var food = {};
+
     function init() {
         snakeBody = [];
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < 5; i++) {
             snakeNode(parseInt(snakeNumX / 2) + i, snakeNumY / 2)
         }
 
         drawSnake();
+        putFood();
     }
 
     function snakeNode(x, y) {
@@ -45,6 +48,12 @@
             ctx.fillRect(snakeBody[i].x * snakeSize, snakeBody[i].y * snakeSize, snakeSize, snakeSize);
             ctx.closePath();
         }
+
+        //画食物
+        ctx.beginPath();
+        ctx.fillStyle = '#f00';
+        ctx.fillRect(food.x * snakeSize, food.y * snakeSize, snakeSize, snakeSize);
+        ctx.closePath();
     }
 
     function snakeMove() {
@@ -67,6 +76,10 @@
                 break;
         }
 
+        if (food.x == snakeBody[0].x && food.y == snakeBody[0].y) {
+            snakeBody.push({x: snakeBody[snakeBody.length - 1].x, y: snakeBody[snakeBody.length - 1].y});
+            putFood();
+        }
     }
 
     init();
@@ -94,6 +107,25 @@
         if (Math.abs(snakeDir) != Math.abs(dir)) {
             snakeDir = dir;
         }
+    }
+
+    function putFood() {
+        while (1) {
+            var flag = true;
+            var foodX = parseInt(Math.random() * snakeNumX);
+            var foodY = parseInt(Math.random() * snakeNumY);
+            for (var i = 0; i < snakeBody.length; i++) {
+                if (snakeBody[i].x == foodX && snakeBody[i].y == foodY) {
+                    flag = false;
+                }
+            }
+            if (flag) {
+                break;
+            }
+        }
+
+        food.x = foodX;
+        food.y = foodY;
     }
 
     setInterval(function () {
