@@ -20,6 +20,7 @@
     var snakeNumX = cvs.width / snakeSize;
     var snakeNumY = cvs.height / snakeSize;
 
+    //默认向左移动
     var snakeDir = -2;
 
     var snakeBody = [];
@@ -34,8 +35,11 @@
             snakeNode(parseInt(snakeNumX / 2) + i, snakeNumY / 2)
         }
 
-        drawSnake();
+        //初始化要统一方向，否则可能方向冲突
+        snakeDir = -2;
+
         putFood();
+        drawSnake();
     }
 
     function snakeNode(x, y) {
@@ -51,11 +55,18 @@
             ctx.closePath();
         }
 
-        //画食物
-        ctx.beginPath();
-        ctx.fillStyle = '#f00';
-        ctx.fillRect(food.x * snakeSize, food.y * snakeSize, snakeSize, snakeSize);
-        ctx.closePath();
+        if (food.hasOwnProperty('x') && food.hasOwnProperty('y')) {
+            //画食物
+            ctx.beginPath();
+            ctx.fillStyle = '#f00';
+            ctx.fillRect(food.x * snakeSize, food.y * snakeSize, snakeSize, snakeSize);
+            ctx.closePath();
+
+            //恢复画笔颜色
+            ctx.fillStyle = '#0c0';
+        } else {
+            console.log('error:1')
+        }
     }
 
     function snakeMove() {
@@ -80,9 +91,9 @@
             snakeBody[i].x = snakeBody[i - 1].x;
             snakeBody[i].y = snakeBody[i - 1].y;
 
+            //吃到自己
             if (snakeBody[i].x == snakeHead.x && snakeBody[i].y == snakeHead.y) {
                 gameOver();
-                return;
             }
         }
 
@@ -92,11 +103,14 @@
             gameOver();
         }
 
-        if (food.x == snakeBody[0].x && food.y == snakeBody[0].y) {//吃到食物
-            speed = snakeBody.length;
+        if (food.hasOwnProperty('x') && food.hasOwnProperty('y')) {
+            if (food.x == snakeBody[0].x && food.y == snakeBody[0].y) {//吃到食物
 
-            snakeBody.push({x: snakeBody[snakeBody.length - 1].x, y: snakeBody[snakeBody.length - 1].y});
-            putFood();
+                snakeBody.push({x: snakeBody[snakeBody.length - 1].x, y: snakeBody[snakeBody.length - 1].y});
+                putFood();
+            }
+        } else {
+            console.log('error:2')
         }
 
         drawSnake();
@@ -152,7 +166,7 @@
         food.y = foodY;
     }
 
-    var timer = setInterval(function () {
+    setInterval(function () {
         snakeMove();
     }, 500 - speed * 5);
 </script>
